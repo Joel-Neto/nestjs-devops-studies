@@ -1,0 +1,53 @@
+@baseUrl = http://localhost:3000
+@jwtToken = {{authLogin.response.body.accessToken}}
+
+@userNameForTesting = John Doe
+@userEmailForTesting = test@email.com
+@userPasswordForTesting = 123456
+
+@adminNameForTesting = Admin
+@adminEmailForTesting = admin@email.com
+@adminPasswordForTesting = 123456
+
+### REGISTER USER
+POST {{baseUrl}}/auth/register
+Content-Type: application/json
+
+{
+  "name": "{{userNameForTesting}}",
+  "email": "{{userEmailForTesting}}",
+  "password": "{{userPasswordForTesting}}"
+}
+
+### Login USER
+# @name authLogin
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "{{userEmailForTesting}}",
+  "password": "{{userPasswordForTesting}}"
+}
+
+### Get Profile
+GET {{baseUrl}}/auth/profile
+Authorization: Bearer {{jwtToken}}
+
+### Register Admin
+POST {{baseUrl}}/auth/create-admin
+Content-Type: application/json
+Authorization: Bearer {{jwtToken}}
+
+{
+  "name": "{{adminNameForTesting}}",
+  "email": "{{adminEmailForTesting}}",
+  "password": "{{adminPasswordForTesting}}"
+}
+
+# ------------------ POSTS -------------------------
+
+### GET all posts
+GET {{baseUrl}}/posts
+
+### GET post by ID
+GET {{baseUrl}}/posts/1
