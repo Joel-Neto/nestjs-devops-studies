@@ -49,16 +49,20 @@ import { EmailModule } from './email/email.module';
       }),
       inject: [ConfigService],
     }),
-    BullModule.forRoot({
-      connection: {
-        host: 'localhost',
-        port: 6379,
-      },
-      defaultJobOptions: {
-        attempts: 3,
-        removeOnComplete: 10,
-        removeOnFail: 30,
-      },
+    BullModule.forRootAsync({
+      imports: [ConfigModule],
+      useFactory: (configService: ConfigService) => ({
+        connection: {
+          host: configService.get<string>('REDIS_HOST', 'localhost'),
+          port: configService.get<number>('REDIS_PORT', 6379),
+        },
+        defaultJobOptions: {
+          attempts: 3,
+          removeOnComplete: 10,
+          removeOnFail: 30,
+        },
+      }),
+      inject: [ConfigService],
     }),
     PostsModule,
     AuthModule,
