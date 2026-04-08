@@ -1,5 +1,6 @@
 import {
   ConflictException,
+  Inject,
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
@@ -14,6 +15,8 @@ import { JwtPayload } from './types/jwt-payload.type';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { EventNames } from '../events/constants/event-names.constants';
 import { UserRegisteredEvent } from 'src/events/listeners/user-registered.listener';
+import { type ConfigType } from '@nestjs/config';
+import { jwtConfig } from './config/jwt.config';
 
 @Injectable()
 export class AuthService {
@@ -22,6 +25,8 @@ export class AuthService {
     private userRepository: Repository<User>,
     private jwtService: JwtService,
     private readonly eventEmitter: EventEmitter2,
+    @Inject(jwtConfig.KEY)
+    private readonly jwtConfiguration: ConfigType<typeof jwtConfig>,
   ) {}
 
   async register(registerDto: RegisterDto) {
@@ -125,7 +130,7 @@ export class AuthService {
   async refreshToken(refreshToken: string) {
     try {
       const payload: { sub: number } = this.jwtService.verify(refreshToken, {
-        secret: 'refresh_secret',
+        secret: this.jwtConfiguration.refreshSecret,
       });
 
       const user = await this.userRepository.findOneBy({ id: payload.sub });
@@ -181,7 +186,7 @@ export class AuthService {
     };
 
     return this.jwtService.sign(payload, {
-      secret: 'jwt_secret',
+      secret: this.jwtConfiguration.secret,
       expiresIn: '15m',
     });
   }
@@ -192,7 +197,7 @@ export class AuthService {
     };
 
     return this.jwtService.sign(payload, {
-      secret: 'refresh_secret',
+      secret: this.jwtConfiguration.refreshSecret,
       expiresIn: '7d',
     });
   }
