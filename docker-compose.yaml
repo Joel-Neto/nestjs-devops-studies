@@ -1,6 +1,6 @@
 services:
   redis:
-    image: redis:latest
+    image: redis:8.2.1-alpine
     container_name: redis
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
@@ -9,6 +9,8 @@ services:
       retries: 10
     ports:
       - "6379:6379"
+    volumes:
+      - redis_data:/data
     restart: unless-stopped
 
   postgres:
@@ -50,5 +52,4 @@ services:
 
 volumes:
   postgres_data:
-    external: true
-    name: postgres_data
+  redis_data:
