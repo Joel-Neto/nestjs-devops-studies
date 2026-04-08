@@ -16,7 +16,9 @@ export class EmailProcessor extends WorkerHost {
   async process(job: Job) {
     switch (job.name) {
       case EmailJobNames.WELCOME:
-        await this.emailService.sendWelcome(job.data);
+        await this.emailService.sendWelcome(
+          job.data as { to: string; name: string },
+        );
         break;
       default:
         throw new Error(`Unknown job name: ${job.name}`);
